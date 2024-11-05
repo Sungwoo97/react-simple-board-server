@@ -45,8 +45,16 @@ app.get('/list', (req, res) => {
   });
 })
 
+app.get('/detail', (req, res) => {
+  const id = req.query.id;
+  const sql = "SELECT BOARD_TITLE, BOARD_CONTENT FROM board WHERE BOARD_ID = ? ";
+  db.query(sql, [id], (err, result)=> {
+    if (err) throw err;
+    res.send(result);
+  });
+})
+
 app.post('/insert', (req, res) => {
-  //console.log(req.body);
   let title = req.body.title;
   let content = req.body.content;
   const sql = "INSERT INTO board (BOARD_TITLE, BOARD_CONTENT, REGISTER_ID) VALUES ( ?, ?, 'admin')";
@@ -56,8 +64,30 @@ app.post('/insert', (req, res) => {
   });
 })
 
+app.post('/update', (req, res) => {
+  // let id = req.body.id;
+  // let title = req.body.title;
+  // let content = req.body.content;
+  const {id, title, content} = req.body;
+  const sql = "UPDATE board SET BOARD_TITLE = ?, BOARD_CONTENT = ? WHERE BOARD_ID = ?";
+  db.query(sql, [title, content, id] ,(err, result)=> {
+    if (err) throw err;
+    res.send(result);
+  });
+})
+
+app.post('/delete', (req, res) => {
+  // const boardIdList = req.body.boardIdList
+  const {boardIDList} = req.body;
+  const sql = `DELETE FROM board WHERE BOARD_ID in ( ${boardIDList} )`;
+  db.query(sql, (err, result)=> {
+    if (err) throw err;
+    res.send(result);
+  });
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-//db.end();
+// db.end();
